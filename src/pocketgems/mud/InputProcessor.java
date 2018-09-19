@@ -146,7 +146,12 @@ public class InputProcessor {
 			item.getIdentityComponent().id = arguments.get(0);
 			world.AddEntity(item);
 		} else if (command.equals("get")) {
+			Entity item = world.GetEntity(arguments.get(0));
+			moveToInventory(world, item);
 		} else if (command.equals("drop")) {
+			Entity item = world.GetEntityFromPlayerInventory(arguments.get(0));
+			Entity room = world.GetPlayer().getLocationComponent().room(world);
+			moveToRoom(world, item, room.getIdentityComponent().id);
 		} else if (command.equals("inventory") || command.equals("inv") || command.equals("i")) {
 			
 		} else if (command.equals("movething")) {
@@ -236,6 +241,9 @@ public class InputProcessor {
 		destinationRoomComponent.inhabitantIds.add(identityComponent.id);
 	}
 
+	protected void moveToInventory(World world, Entity entity)
+			throws ComponentNotFoundException, EntityNotFoundException {
+	}
 	
 
 	protected Entity entityInRoom(World world, String keyword)

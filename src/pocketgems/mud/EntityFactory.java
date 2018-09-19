@@ -14,7 +14,6 @@ public abstract class EntityFactory {
 		entity.addComponent(new IdentityComponent());
 		entity.addComponent(new DescriptionComponent());
 		entity.addComponent(new RoomComponent());
-		entity.addComponent(new InventoryComponent());
 		return entity;
 	}
 	

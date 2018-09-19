@@ -3,6 +3,7 @@ package pocketgems.mud;
 import java.util.HashMap;
 
 import pocketgems.mud.components.IdentityComponent;
+import pocketgems.mud.exceptions.ComponentNotFoundException;
 import pocketgems.mud.exceptions.EntityNotFoundException;
 
 /*
@@ -34,6 +35,18 @@ public class World {
 			throw new EntityNotFoundException(id);
 		}
 		return e;
+	}
+
+	public Entity GetEntityFromPlayerInventory(String id)
+			throws EntityNotFoundException, ComponentNotFoundException {
+		if(player.getInventoryComponent().itemIds.contains(id)) {
+			Entity e = entitiesById.get(id);
+			if (e == null) {
+				throw new EntityNotFoundException(id);
+			}
+			return e;
+		}
+		throw new EntityNotFoundException(id);
 	}
 
 	public Entity GetPlayer() {
