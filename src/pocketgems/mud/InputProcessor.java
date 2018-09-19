@@ -146,7 +146,7 @@ public class InputProcessor {
 			item.getIdentityComponent().id = arguments.get(0);
 			world.AddEntity(item);
 		} else if (command.equals("get")) {
-			Entity item = world.GetEntity(arguments.get(0));
+			Entity item = world.GetEntity(arguments.get(0), true);
 			moveToInventory(world, item);
 		} else if (command.equals("drop")) {
 			Entity item = world.GetEntityFromPlayerInventory(arguments.get(0));

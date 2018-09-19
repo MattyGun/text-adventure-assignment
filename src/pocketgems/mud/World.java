@@ -1,7 +1,13 @@
 package pocketgems.mud;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
+import javax.security.auth.DestroyFailedException;
+
+import pocketgems.mud.components.DescriptionComponent;
 import pocketgems.mud.components.IdentityComponent;
 import pocketgems.mud.exceptions.ComponentNotFoundException;
 import pocketgems.mud.exceptions.EntityNotFoundException;
@@ -37,15 +43,53 @@ public class World {
 		return e;
 	}
 
+	public Entity GetEntity(String id, Boolean alsoCheckKeywords)
+			throws EntityNotFoundException, ComponentNotFoundException {
+		Entity e = entitiesById.get(id);
+		if (e == null && alsoCheckKeywords) {
+				e = GetEntityFromKeyword(id);
+		}
+		
+		if (e == null) {
+			throw new EntityNotFoundException(id);
+		}
+		return e;
+	}
+	
+	public Entity GetEntityFromKeyword(String keyword)
+			throws EntityNotFoundException, ComponentNotFoundException {
+		Iterator<Map.Entry<String, Entity>> itor = entitiesById.entrySet().iterator();
+		while (itor.hasNext()) {
+			Map.Entry<String, Entity> pair = (Map.Entry<String, Entity>)itor.next();
+			DescriptionComponent description = pair.getValue().getDescriptionComponent();
+			if (description != null && description.keywords.contains(keyword)) {
+				return pair.getValue();
+			}
+		}
+		throw new EntityNotFoundException(keyword);
+	}
+
+	// Return the entity that either matches the passes in id or the entity that has a keyword that matches the id.
 	public Entity GetEntityFromPlayerInventory(String id)
 			throws EntityNotFoundException, ComponentNotFoundException {
-		if(player.getInventoryComponent().itemIds.contains(id)) {
-			Entity e = entitiesById.get(id);
-			if (e == null) {
-				throw new EntityNotFoundException(id);
+		for (String invId : player.getInventoryComponent().itemIds) {
+			Entity e = entitiesById.get(invId);
+			// If the ID's are matching we have the expected item.
+			if (id.equals(invId)) {
+				if (e == null) {
+					throw new EntityNotFoundException(id);
+				} else {
+					return e;
+				}
 			}
-			return e;
+			if (e != null) {
+				DescriptionComponent description = e.getDescriptionComponent();
+				if (description != null && description.keywords.contains(id)) {
+					return e;
+				}
+			}
 		}
+		
 		throw new EntityNotFoundException(id);
 	}
 
