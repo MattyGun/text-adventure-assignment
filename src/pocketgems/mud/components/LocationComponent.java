@@ -10,6 +10,7 @@ import pocketgems.mud.World;
  * Put this component on entities that can exist in a room.
  */
 public class LocationComponent extends Component {
+	public Boolean inInventory;
 	public String roomId;
 
 	public Entity room(World world) throws EntityNotFoundException {

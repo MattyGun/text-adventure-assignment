@@ -77,7 +77,7 @@ public class InputProcessor {
 				System.out.print("Create elements in the world with:\n  ");
 				String[] adminCommands = {
 					"createroom", "createexit", "creatething", "setname", "setdescription",
-					"addexit", "setdestination", "addkeyword"
+					"addexit", "setdestination", "addkeyword", "createitem"
 				};
 				System.out.println(String.join("\n  ", adminCommands));
 				System.out.println();
@@ -87,6 +87,9 @@ public class InputProcessor {
 					"  movething <thing> <place>  Used to place an object in the world, including the player\n" +
 					"  look [keyword]             Look at the current room or named object\n" +
 					"  go <exit>                  Go to the named exit\n" +
+					"  get [keyword]              Add item from room to inventory\n" +
+					"  drop [keyword]             Remove item from inventory in place in current room\n" +
+					"  inventory | inv | i        Print a list of inventory items and descriptions\n" +
 					"  exit                       Quit the game\n" +
 					"\ntry \"help admin\" for a list of world-building commands");
 				System.out.println();
@@ -136,6 +139,16 @@ public class InputProcessor {
 		} else if (command.equals("addkeyword")) {
 			Entity entity = world.GetEntity(arguments.get(0));
 			entity.getDescriptionComponent().keywords.add(arguments.get(1));
+			
+		// Adding the inventory commands here.
+		} else if (command.equals("createitem")) {
+			Entity item = EntityFactory.createItem();
+			item.getIdentityComponent().id = arguments.get(0);
+			world.AddEntity(item);
+		} else if (command.equals("get")) {
+		} else if (command.equals("drop")) {
+		} else if (command.equals("inventory") || command.equals("inv") || command.equals("i")) {
+			
 		} else if (command.equals("movething")) {
 			Entity thing = world.GetEntity(arguments.get(0));
 			Entity room = world.GetEntity(arguments.get(1));
