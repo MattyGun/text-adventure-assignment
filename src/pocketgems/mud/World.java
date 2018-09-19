@@ -76,11 +76,7 @@ public class World {
 			Entity e = entitiesById.get(invId);
 			// If the ID's are matching we have the expected item.
 			if (id.equals(invId)) {
-				if (e == null) {
-					throw new EntityNotFoundException(id);
-				} else {
-					return e;
-				}
+				return e;
 			}
 			if (e != null) {
 				DescriptionComponent description = e.getDescriptionComponent();
@@ -89,8 +85,7 @@ public class World {
 				}
 			}
 		}
-		
-		throw new EntityNotFoundException(id);
+		return null;
 	}
 
 	public Entity GetPlayer() {

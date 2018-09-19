@@ -150,18 +150,20 @@ public class InputProcessor {
 			moveToInventory(world, item);
 		} else if (command.equals("drop")) {
 			Entity item = world.GetEntityFromPlayerInventory(arguments.get(0));
-			Entity room = world.GetPlayer().getLocationComponent().room(world);
-			moveToRoom(world, item, room.getIdentityComponent().id);
+			if(item == null) {
+				System.out.println("You do not have that");
+			} else {
+				Entity room = world.GetPlayer().getLocationComponent().room(world);
+				removeFromInventory(world, item, room.getIdentityComponent().id);
+			}
 		} else if (command.equals("inventory") || command.equals("inv") || command.equals("i")) {
 			if(world.GetPlayer().getInventoryComponent().itemIds.size() > 0) {
 				for (String ids : world.GetPlayer().getInventoryComponent().itemIds) {
-					String name = world.GetEntity(ids).getDescriptionComponent().name;
 					String description = world.GetEntity(ids).getDescriptionComponent().description;
-					System.out.println(" " + name);
 					System.out.println("  - " + description);
 				}
 			} else {
-				System.out.println("Inventory is emprty");
+				System.out.println("There are no items in your inventory");
 			}
 			
 		} else if (command.equals("movething")) {
@@ -242,9 +244,27 @@ public class InputProcessor {
 
 		Entity room = locationComponent.room(world);
 		if (room != null) {
-			// Try to remove the item from the player's inventory first.
-			if (!world.GetPlayer().getInventoryComponent().itemIds.remove(identityComponent.id)) {
-				room.getRoomComponent().inhabitantIds.remove(identityComponent.id);
+			room.getRoomComponent().inhabitantIds.remove(identityComponent.id);
+		}
+
+		locationComponent.roomId = destinationRoomId;
+
+		RoomComponent destinationRoomComponent = world.GetEntity(destinationRoomId).getRoomComponent();
+		destinationRoomComponent.inhabitantIds.add(identityComponent.id);
+	}
+
+	protected void removeFromInventory(World world, Entity entity, String destinationRoomId)
+			throws ComponentNotFoundException, EntityNotFoundException {
+		IdentityComponent identityComponent = entity.getIdentityComponent();
+		LocationComponent locationComponent = entity.getLocationComponent();
+
+		Entity room = locationComponent.room(world);
+		if (room != null) {
+			if (world.GetPlayer().getInventoryComponent().itemIds.remove(identityComponent.id)) {
+				System.out.println("You drop " + entity.getDescriptionComponent().description + ".");
+			} else {
+				System.out.println("You do not have that");
+				return;
 			}
 		}
 
@@ -256,12 +276,11 @@ public class InputProcessor {
 
 	protected void moveToInventory(World world, Entity entity)
 			throws ComponentNotFoundException, EntityNotFoundException {
-		// Get all the ids we need.
 		IdentityComponent identityComponent = entity.getIdentityComponent();
 		
 		// Make sure the item is an inventory item.
 		if (!entity.getPropertyComponent().isInventoryItem) {
-			System.out.println(entity.getDescriptionComponent().name + " can not be picked up.");
+			System.out.println("You can not take that");
 			return;
 		}
 		
@@ -276,7 +295,7 @@ public class InputProcessor {
 		// Remove the item from the current player's room if it's in there.
 		if (!room.getRoomComponent().inhabitantIds.remove(identityComponent.id)) {
 			// The item was not in the player's room.
-			System.out.println("The " + entity.getDescriptionComponent().name + " does not exist in " + room.getDescriptionComponent().name + ".");
+			System.out.println("Item not found");
 			return;
 		}
 		
@@ -284,6 +303,8 @@ public class InputProcessor {
 		entity.getLocationComponent().roomId = player.getIdentityComponent().id;
 		// Add the item to the players inventory.
 		player.getInventoryComponent().itemIds.add(identityComponent.id);
+		
+		System.out.println("You aquired " + entity.getDescriptionComponent().description + ".");
 	}
 	
 

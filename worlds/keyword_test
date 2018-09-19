@@ -6,14 +6,10 @@ setdescription room1 "A big room"
 createitem item1
 addkeyword item1 test
 setname item1 "Item"
-setdescription item1 "Not a thing"
+setdescription item1 "Test item"
 movething item1 room1
 
 get item1
-i
 drop item1
-i
 get test
-i
 drop test
-i
