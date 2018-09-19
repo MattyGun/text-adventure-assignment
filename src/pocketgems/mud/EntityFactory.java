@@ -5,6 +5,7 @@ import pocketgems.mud.components.IdentityComponent;
 import pocketgems.mud.components.InventoryComponent;
 import pocketgems.mud.components.LocationComponent;
 import pocketgems.mud.components.PortalComponent;
+import pocketgems.mud.components.PropertyComponent;
 import pocketgems.mud.components.RoomComponent;
 import pocketgems.mud.exceptions.ComponentNotFoundException;
 
@@ -23,8 +24,12 @@ public abstract class EntityFactory {
 		entity.addComponent(new IdentityComponent());
 		entity.addComponent(new DescriptionComponent());
 		entity.addComponent(new LocationComponent());
-		// Mark this thing as not in the room's inventory.
-		entity.getLocationComponent().inInventory = false;
+
+		// This thing can not be added to the players inventory.
+		PropertyComponent property = new PropertyComponent();
+		property.isInventoryItem = false;
+		entity.addComponent(property);
+		
 		return entity;
 	}
 
@@ -42,8 +47,13 @@ public abstract class EntityFactory {
 		entity.addComponent(new IdentityComponent());
 		entity.addComponent(new DescriptionComponent());
 		entity.addComponent(new LocationComponent());
-		// Mark this item as being in the room's inventory.
-		entity.getLocationComponent().inInventory = true;
+		entity.addComponent(new PropertyComponent());
+
+		// This item can be added to the players inventory.
+		PropertyComponent property = new PropertyComponent();
+		property.isInventoryItem = true;
+		entity.addComponent(property);
+		
 		return entity;
 	}
 	

@@ -149,3 +149,19 @@ addkeyword room-2-1-South s
 setdestination room-2-1-South room-2-0
 addexit room-2-1 room-2-1-South
 movething player room-2-4
+
+createitem bat
+setname bat "Baseball Bat"
+setdescription bat "A wooden baseball bat"
+movething bat room-2-4
+createitem hat
+setname hat "Trucker hat"
+setdescription hat "A red trucker hat"
+movething hat room-2-3
+
+createitem flashlight
+addkeyword flashlight fl
+setname flashlight "Flashlight"
+setdescription flashlight "A flashlight with no batteries"
+movething flashlight room-2-4
+get flashlight

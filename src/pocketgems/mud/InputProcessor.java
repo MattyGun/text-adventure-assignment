@@ -153,6 +153,16 @@ public class InputProcessor {
 			Entity room = world.GetPlayer().getLocationComponent().room(world);
 			moveToRoom(world, item, room.getIdentityComponent().id);
 		} else if (command.equals("inventory") || command.equals("inv") || command.equals("i")) {
+			if(world.GetPlayer().getInventoryComponent().itemIds.size() > 0) {
+				for (String ids : world.GetPlayer().getInventoryComponent().itemIds) {
+					String name = world.GetEntity(ids).getDescriptionComponent().name;
+					String description = world.GetEntity(ids).getDescriptionComponent().description;
+					System.out.println(" " + name);
+					System.out.println("  - " + description);
+				}
+			} else {
+				System.out.println("Inventory is emprty");
+			}
 			
 		} else if (command.equals("movething")) {
 			Entity thing = world.GetEntity(arguments.get(0));
@@ -232,7 +242,10 @@ public class InputProcessor {
 
 		Entity room = locationComponent.room(world);
 		if (room != null) {
-			room.getRoomComponent().inhabitantIds.remove(identityComponent.id);
+			// Try to remove the item from the player's inventory first.
+			if (!world.GetPlayer().getInventoryComponent().itemIds.remove(identityComponent.id)) {
+				room.getRoomComponent().inhabitantIds.remove(identityComponent.id);
+			}
 		}
 
 		locationComponent.roomId = destinationRoomId;
@@ -243,6 +256,34 @@ public class InputProcessor {
 
 	protected void moveToInventory(World world, Entity entity)
 			throws ComponentNotFoundException, EntityNotFoundException {
+		// Get all the ids we need.
+		IdentityComponent identityComponent = entity.getIdentityComponent();
+		
+		// Make sure the item is an inventory item.
+		if (!entity.getPropertyComponent().isInventoryItem) {
+			System.out.println(entity.getDescriptionComponent().name + " can not be picked up.");
+			return;
+		}
+		
+		Entity player = world.GetPlayer();
+		
+		Entity room = player.getLocationComponent().room(world);		
+		// It is possible to not be in a room.
+		if (room == null) {
+			System.out.println("The player is not in a room.");
+			return;
+		}
+		// Remove the item from the current player's room if it's in there.
+		if (!room.getRoomComponent().inhabitantIds.remove(identityComponent.id)) {
+			// The item was not in the player's room.
+			System.out.println("The " + entity.getDescriptionComponent().name + " does not exist in " + room.getDescriptionComponent().name + ".");
+			return;
+		}
+		
+		// Set the item's location to the player.
+		entity.getLocationComponent().roomId = player.getIdentityComponent().id;
+		// Add the item to the players inventory.
+		player.getInventoryComponent().itemIds.add(identityComponent.id);
 	}
 	
 
